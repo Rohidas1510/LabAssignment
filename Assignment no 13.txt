@@ -1,0 +1,104 @@
+
+    ASSIGNMENT NO 13
+---------------------------------------------------------------------------------
+Quetion no 1
+
+package Assignment13;
+
+import java.util.HashMap;
+
+//declaring class
+public class HashMapArray 
+{
+	//calling main method
+	public static void main(String[] args) 
+	{
+		//ArrayList
+		char[]arr= {'a','c','d','f','a'};
+
+		//creating Hashmap to store count value 
+		HashMap <Character,Integer>charCounts = new HashMap<>();
+
+		//using for each loop
+		for(char r:arr)
+		{
+			int count=charCounts.getOrDefault(r,0);
+			charCounts.put(r, count+1);
+		}
+
+		//using for each loop
+			for(char r:charCounts.keySet()) 
+			{
+				System.out.println(r+":"+charCounts.get(r)); //for printing output
+			}
+
+	} //end of main method
+
+} //end class of HashMapArray
+
+
+
+/*OUTPUT*/
+
+a:2
+c:1
+d:1
+f:1
+
+--------------------------------------------------------------------
+
+Quetion no 2
+
+package Assignment13;
+
+//declaring class
+public class SquareOfArray 
+{
+	//declaring method
+	private static boolean PerfectSqrArr(int[]arr) 
+	{
+		int abc=0,n=0;
+
+		//using for loop
+		for(int i=0;i<arr.length;i++) 
+		{
+			abc=(int)Math.sqrt(arr[i]); 
+			abc=n*n;
+
+			//using if statement
+			if(abc!=arr[i]) 
+			{
+				return false; //for output
+			}
+		}
+
+		return true; //for output
+
+	} //end of method
+
+	// calling main method
+	public static void main(String[] args) 
+	{
+
+		//ArrayList
+		int[]arr= {16,144,169,224}; 
+
+		//using if-else statement
+		if( PerfectSqrArr(arr))  
+		{
+			System.out.println(" Array is perfect square array."); //for printing output
+		}
+		else 
+		{
+			System.out.println(" Array is not a Perfect square array ."); //for printing output
+		}
+
+	} //end of main method
+} //end class of SquareOfArray 
+
+
+        
+
+              /*OUTPUT*/
+
+ Array is not a Perfect square array .
