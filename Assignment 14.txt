@@ -1,0 +1,550 @@
+          Assignment no 14
+
+
+---------------------GroceriesApplication--------------------
+package com.example;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class GroceriesApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(GroceriesApplication.class, args);
+	}
+
+}
+
+---------------------GroceriesController---------------------------
+
+package com.example.Controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.Model.Groceries;
+import com.example.Service.GroceriesService;
+
+//create RESTful web services using Spring MVC.
+@RestController
+public class GroceriesController {
+	
+	//connection with GroceriesService
+	@Autowired
+	GroceriesService groceriesService;
+	
+	//mapping HTTP POST requests onto specific handler methods.
+	@PostMapping("/groceries")
+	public Groceries createGroceries(@RequestBody Groceries groceries)
+	{
+		return groceriesService.createGroceries(groceries);
+		
+		
+	}
+
+	//mapping HTTP GET requests onto specific handler methods
+	@GetMapping("/groceries")
+	List<Groceries> findAllGroceries()
+	{
+		return groceriesService.findAllGroceries();
+		
+		
+	}
+	
+	
+	// maps HTTP DELETE requests onto specific handler methods.
+	@DeleteMapping("/groceries/{id}")
+	public String deleteGroceries(@PathVariable int id)
+	{
+		groceriesService.deleteGroceries(id);
+		return "Groceries deleted";
+		
+	}
+	
+	//mapping HTTP PUT requests onto specific handler methods
+	@PutMapping("/groceries")
+	public Groceries updateGroceries(@RequestBody Groceries groceries)
+	{
+		return groceriesService.updateGroceries(groceries);
+		
+		
+	}
+	
+	
+	@GetMapping("/groceries/id/{id}")
+	public List<Groceries> findByid(@PathVariable int id)
+	{
+		return groceriesService.findByid(id);
+		
+	}
+	
+	
+	@GetMapping("/groceries/name/{name}")
+	public List<Groceries> findByname(@PathVariable String name)
+	{
+		return groceriesService.findByname(name);
+		
+	}
+}
+
+------------------------------Groceries--------------------------------
+
+package com.example.Model;
+
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+//This annotation indicate this is table
+@Entity
+public class Groceries {
+	
+	//argument constructor
+	public Groceries(int id, String name, int price, int quantity) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.price = price;
+		this.quantity = quantity;
+	}
+	
+	//No-agr constructor
+	public Groceries() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	//Getter and setter method of Groceries class variable
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getPrice() {
+		return price;
+	}
+	public void setPrice(int price) {
+		this.price = price;
+	}
+	public int getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+	
+	//All are private variable
+	//primary key annotation
+	@Id
+	//id generate automaticly
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int id;
+	private String name;
+	private int price;
+	private int quantity;
+}
+
+--------------------------GroceriesRepository----------------------
+
+package com.example.Repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.Model.Groceries;
+//This repository extends JpaRepository interface 
+public interface GroceriesRepository extends JpaRepository<Groceries,Integer>{
+	
+			//Custom method
+			List<Groceries> findByid(int id);
+			List<Groceries> findByname(String name);
+}
+
+--------------------------GroceriesService-------------------------
+
+package com.example.Service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.example.Model.Groceries;
+
+//this annotation  marke this interface has service provider
+@Service
+public interface GroceriesService {
+	
+	//all are unimplemented method
+	Groceries createGroceries(Groceries groceries);
+	List<Groceries> findAllGroceries();
+	void deleteGroceries(int id);
+	Groceries updateGroceries(Groceries groceries);
+	List<Groceries> findByid(int id);
+	List<Groceries> findByname(String name);
+
+}
+
+-------------------------GroceriesServiceImpl---------------------
+
+package com.example.Service.Impl;
+
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.example.Model.Groceries;
+import com.example.Repository.GroceriesRepository;
+import com.example.Service.GroceriesService;
+
+//to indicate that the class provides the mechanism for storage, retrieval, search, update and delete operation on objects.
+@Repository
+public class GroceriesServiceImpl implements GroceriesService {
+	
+	//connection with groceriesrepository
+	@Autowired
+	GroceriesRepository groceriesRepository;
+	
+	//all method of GroceriesService implemented by this class
+	@Override
+	
+	//create Groceries
+	public Groceries createGroceries(Groceries groceries) {
+		// TODO Auto-generated method stub
+		return groceriesRepository.save(groceries) ;
+	}
+
+	@Override
+	
+	//find the all Groceries
+	public List<Groceries> findAllGroceries() {
+		// TODO Auto-generated method stub
+		return groceriesRepository.findAll();
+	}
+
+	@Override
+	
+	//delete the Groceries
+	public void deleteGroceries(int id) {
+		// TODO Auto-generated method stub
+		groceriesRepository.deleteById(id);
+		
+	}
+
+	@Override
+	
+	//update the Groceries
+	public Groceries updateGroceries(Groceries groceries) {
+		// TODO Auto-generated method stub
+		Groceries _groceries=groceriesRepository.findById(groceries.getId()).get();
+		_groceries.setName(groceries.getName());
+		_groceries.setPrice(groceries.getPrice());
+		_groceries.setQuantity(groceries.getQuantity());
+		return groceriesRepository.save(_groceries) ;
+	}
+
+	@Override
+	
+	//find the groceries by id
+	public List<Groceries> findByid(int id) {
+		// TODO Auto-generated method stub
+		return groceriesRepository.findByid(id);
+	}
+
+	@Override
+	
+	//find the Groceries by name
+	public List<Groceries> findByname(String name) {
+		// TODO Auto-generated method stub
+		return groceriesRepository.findByname(name);
+	}
+
+}
+
+-------------------------------------------------------------
+                     main/java Resoures
+-------------------------------------------------------------
+
+server.port=8051
+
+spring.datasource.url=jdbc:mysql://localhost:3306/Dnyanu
+spring.datasource.username=root
+spring.datasource.password=7057373201   
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.jpa.database-platform = org.hibernate.dialect.MySQL5Dialect
+spring.jpa.generate-ddl=true
+spring.jpa.hibernate.ddl-auto = update
+
+-------------------------------------------------------------------
+                       OUTPUT
+-------------------------------------------------------------------
+20:27:13.677 [Thread-0] DEBUG org.springframework.boot.devtools.restart.classloader.RestartClassLoader - Created RestartClassLoader org.springframework.boot.devtools.restart.classloader.RestartClassLoader@49e14341
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+[32m :: Spring Boot :: [39m              [2m (v2.7.7)[0;39m
+
+[2m2023-01-12 20:27:15.191[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mcom.example.GroceriesApplication        [0;39m [2m:[0;39m Starting GroceriesApplication using Java 17.0.5 on DESKTOP-UV0QA6T with PID 1472 (C:\Users\ME\git\LabAssignment\Groceries\target\classes started by ME in C:\Users\ME\git\LabAssignment\Groceries)
+[2m2023-01-12 20:27:15.194[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mcom.example.GroceriesApplication        [0;39m [2m:[0;39m No active profile set, falling back to 1 default profile: "default"
+[2m2023-01-12 20:27:15.400[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36m.e.DevToolsPropertyDefaultsPostProcessor[0;39m [2m:[0;39m Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+[2m2023-01-12 20:27:15.401[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36m.e.DevToolsPropertyDefaultsPostProcessor[0;39m [2m:[0;39m For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+[2m2023-01-12 20:27:17.556[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2m2023-01-12 20:27:17.762[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Finished Spring Data repository scanning in 160 ms. Found 1 JPA repository interfaces.
+[2m2023-01-12 20:27:19.624[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat initialized with port(s): 8080 (http)
+[2m2023-01-12 20:27:19.657[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mo.apache.catalina.core.StandardService  [0;39m [2m:[0;39m Starting service [Tomcat]
+[2m2023-01-12 20:27:19.659[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36morg.apache.catalina.core.StandardEngine [0;39m [2m:[0;39m Starting Servlet engine: [Apache Tomcat/9.0.70]
+[2m2023-01-12 20:27:19.993[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mo.a.c.c.C.[Tomcat].[localhost].[/]      [0;39m [2m:[0;39m Initializing Spring embedded WebApplicationContext
+[2m2023-01-12 20:27:19.994[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mw.s.c.ServletWebServerApplicationContext[0;39m [2m:[0;39m Root WebApplicationContext: initialization completed in 4591 ms
+[2m2023-01-12 20:27:20.667[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mo.hibernate.jpa.internal.util.LogHelper [0;39m [2m:[0;39m HHH000204: Processing PersistenceUnitInfo [name: default]
+[2m2023-01-12 20:27:20.857[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36morg.hibernate.Version                   [0;39m [2m:[0;39m HHH000412: Hibernate ORM core version 5.6.14.Final
+[2m2023-01-12 20:27:21.468[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mo.hibernate.annotations.common.Version  [0;39m [2m:[0;39m HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[2m2023-01-12 20:27:21.891[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mcom.zaxxer.hikari.HikariDataSource      [0;39m [2m:[0;39m HikariPool-1 - Starting...
+[2m2023-01-12 20:27:27.104[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mcom.zaxxer.hikari.HikariDataSource      [0;39m [2m:[0;39m HikariPool-1 - Start completed.
+[2m2023-01-12 20:27:27.622[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36morg.hibernate.dialect.Dialect           [0;39m [2m:[0;39m HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+Hibernate: 
+    
+    create table groceries (
+       id integer not null,
+        name varchar(255),
+        price integer not null,
+        quantity integer not null,
+        primary key (id)
+    ) engine=InnoDB
+[2m2023-01-12 20:27:42.454[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mo.h.e.t.j.p.i.JtaPlatformInitiator      [0;39m [2m:[0;39m HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[2m2023-01-12 20:27:42.775[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mj.LocalContainerEntityManagerFactoryBean[0;39m [2m:[0;39m Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2m2023-01-12 20:27:44.452[0;39m [33m WARN[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mJpaBaseConfiguration$JpaWebConfiguration[0;39m [2m:[0;39m spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+[2m2023-01-12 20:27:46.283[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mo.s.b.d.a.OptionalLiveReloadServer      [0;39m [2m:[0;39m LiveReload server is running on port 35729
+[2m2023-01-12 20:27:46.698[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat started on port(s): 8080 (http) with context path ''
+[2m2023-01-12 20:27:46.744[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [36mcom.example.GroceriesApplication        [0;39m [2m:[0;39m Started GroceriesApplication in 33.034 seconds (JVM running for 35.748)
+[2m2023-01-12 20:29:17.459[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[nio-8080-exec-2][0;39m [36mo.a.c.c.C.[Tomcat].[localhost].[/]      [0;39m [2m:[0;39m Initializing Spring DispatcherServlet 'dispatcherServlet'
+[2m2023-01-12 20:29:17.459[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[nio-8080-exec-2][0;39m [36mo.s.web.servlet.DispatcherServlet       [0;39m [2m:[0;39m Initializing Servlet 'dispatcherServlet'
+[2m2023-01-12 20:29:17.465[0;39m [32m INFO[0;39m [35m1472[0;39m [2m---[0;39m [2m[nio-8080-exec-2][0;39m [36mo.s.web.servlet.DispatcherServlet       [0;39m [2m:[0;39m Completed initialization in 6 ms
+Hibernate: 
+    select
+        groceries0_.id as id1_0_,
+        groceries0_.name as name2_0_,
+        groceries0_.price as price3_0_,
+        groceries0_.quantity as quantity4_0_ 
+    from
+        groceries groceries0_
+Hibernate: 
+    select
+        groceries0_.id as id1_0_,
+        groceries0_.name as name2_0_,
+        groceries0_.price as price3_0_,
+        groceries0_.quantity as quantity4_0_ 
+    from
+        groceries groceries0_
+Hibernate: 
+    select
+        groceries0_.id as id1_0_0_,
+        groceries0_.name as name2_0_0_,
+        groceries0_.price as price3_0_0_,
+        groceries0_.quantity as quantity4_0_0_ 
+    from
+        groceries groceries0_ 
+    where
+        groceries0_.id=?
+Hibernate: 
+    select
+        next_val as id_val 
+    from
+        hibernate_sequence for update
+            
+Hibernate: 
+    update
+        hibernate_sequence 
+    set
+        next_val= ? 
+    where
+        next_val=?
+Hibernate: 
+    insert 
+    into
+        groceries
+        (name, price, quantity, id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    select
+        groceries0_.id as id1_0_,
+        groceries0_.name as name2_0_,
+        groceries0_.price as price3_0_,
+        groceries0_.quantity as quantity4_0_ 
+    from
+        groceries groceries0_
+Hibernate: 
+    select
+        groceries0_.id as id1_0_,
+        groceries0_.name as name2_0_,
+        groceries0_.price as price3_0_,
+        groceries0_.quantity as quantity4_0_ 
+    from
+        groceries groceries0_
+Hibernate: 
+    select
+        groceries0_.id as id1_0_0_,
+        groceries0_.name as name2_0_0_,
+        groceries0_.price as price3_0_0_,
+        groceries0_.quantity as quantity4_0_0_ 
+    from
+        groceries groceries0_ 
+    where
+        groceries0_.id=?
+Hibernate: 
+    select
+        next_val as id_val 
+    from
+        hibernate_sequence for update
+            
+Hibernate: 
+    update
+        hibernate_sequence 
+    set
+        next_val= ? 
+    where
+        next_val=?
+Hibernate: 
+    insert 
+    into
+        groceries
+        (name, price, quantity, id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    select
+        groceries0_.id as id1_0_,
+        groceries0_.name as name2_0_,
+        groceries0_.price as price3_0_,
+        groceries0_.quantity as quantity4_0_ 
+    from
+        groceries groceries0_
+Hibernate: 
+    select
+        groceries0_.id as id1_0_0_,
+        groceries0_.name as name2_0_0_,
+        groceries0_.price as price3_0_0_,
+        groceries0_.quantity as quantity4_0_0_ 
+    from
+        groceries groceries0_ 
+    where
+        groceries0_.id=?
+Hibernate: 
+    select
+        next_val as id_val 
+    from
+        hibernate_sequence for update
+            
+Hibernate: 
+    update
+        hibernate_sequence 
+    set
+        next_val= ? 
+    where
+        next_val=?
+Hibernate: 
+    insert 
+    into
+        groceries
+        (name, price, quantity, id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    select
+        groceries0_.id as id1_0_0_,
+        groceries0_.name as name2_0_0_,
+        groceries0_.price as price3_0_0_,
+        groceries0_.quantity as quantity4_0_0_ 
+    from
+        groceries groceries0_ 
+    where
+        groceries0_.id=?
+Hibernate: 
+    select
+        next_val as id_val 
+    from
+        hibernate_sequence for update
+            
+Hibernate: 
+    update
+        hibernate_sequence 
+    set
+        next_val= ? 
+    where
+        next_val=?
+Hibernate: 
+    insert 
+    into
+        groceries
+        (name, price, quantity, id) 
+    values
+        (?, ?, ?, ?)
+Hibernate: 
+    select
+        groceries0_.id as id1_0_,
+        groceries0_.name as name2_0_,
+        groceries0_.price as price3_0_,
+        groceries0_.quantity as quantity4_0_ 
+    from
+        groceries groceries0_
+
+mysql> select * from groceries;
++----+-------+-------+----------+
+| id | name  | price | quantity |
++----+-------+-------+----------+
+|  7 | Coffe |   110 |        2 |
+|  8 | Coffe |   110 |        2 |
+|  9 | Coffe |   110 |        2 |
+| 10 | Coffe |   110 |        2 |
++----+-------+-------+----------+
+4 rows in set (0.00 sec)
+ {
+        "id": 7,
+        "name": "Coffe",
+        "price": 110,
+        "quantity": 2
+    },
+    {
+        "id": 8,
+        "name": "Coffe",
+        "price": 110,
+        "quantity": 2
+    },
+    {
+        "id": 9,
+        "name": "Coffe",
+        "price": 110,
+        "quantity": 2
+    },
+    {
+        "id": 10,
+        "name": "Coffe",
+        "price": 110,
+        "quantity": 2
+    }
+]
